@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Operadic Compositionality — Noether Course</title>
+<meta name="description" content="Interactive course and PhD-level thesis on operadic question trees, Noether symmetries, and compositional systems."/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --paper: #f3ecdc; --paper-deep: #e8dfc8; --ink: #1c1916; --ink-soft: #3f3a34;
+    --muted: #6b645a; --rule: #cfc4ad; --surface: #faf6ec; --accent: #8b3a2a; --ok: #2f6b4f;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; font-family: "DM Sans", system-ui, sans-serif; background: var(--paper); color: var(--ink); line-height: 1.55; }
+  a { color: var(--accent); }
+  code, .mono { font-family: "JetBrains Mono", monospace; font-size: 0.9em; }
+  h1,h2,h3,h4, .display { font-family: "Newsreader", Georgia, serif; font-weight: 600; letter-spacing: -0.02em; }
+  header { position: sticky; top: 0; z-index: 40; background: rgba(243,236,220,0.94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--rule); }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 1.25rem; }
+  .nav { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; align-items: center; justify-content: space-between; padding: .85rem 0; }
+  .brand { font-family: "Newsreader", serif; font-size: 1.15rem; color: var(--ink); text-decoration: none; }
+  .nav-links { display: flex; flex-wrap: wrap; gap: .85rem; font-size: .9rem; }
+  .nav-links a { color: var(--ink-soft); text-decoration: none; }
+  .nav-links a:hover { color: var(--accent); }
+  .stamp { display: inline-block; font-family: "JetBrains Mono", monospace; font-size: .65rem; letter-spacing: .04em; text-transform: uppercase; border: 1.5px solid var(--accent); color: var(--accent); padding: .15rem .5rem; transform: rotate(-2deg); }
+  .hero { padding: 2.5rem 0 1rem; }
+  .hero h1 { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; max-width: 18ch; margin: .75rem 0; }
+  .lede { font-size: 1.05rem; color: var(--ink-soft); max-width: 68ch; }
+  .cta { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.25rem; }
+  .btn { display: inline-block; border-radius: 8px; padding: .65rem 1rem; font-size: .9rem; font-weight: 500; text-decoration: none; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn.soft { background: var(--surface); color: var(--ink-soft); border-color: var(--rule); }
+  .grid2 { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .card { background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 1rem 1.1rem; }
+  .card a { text-decoration: none; color: inherit; display: block; }
+  .kicker { font-family: "JetBrains Mono", monospace; font-size: .7rem; text-transform: uppercase; color: var(--muted); letter-spacing: .06em; }
+  .panel { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 1.25rem 1.35rem; margin: 1rem 0; }
+  section.block { padding: 2rem 0; border-top: 1px solid var(--rule); }
+  section.block h2 { font-size: 1.75rem; margin: 0 0 .35rem; }
+  .muted { color: var(--muted); }
+  .module .mod-num { font-family: "JetBrains Mono", monospace; font-size: .72rem; text-transform: uppercase; color: var(--muted); letter-spacing: .06em; }
+  .epithet { font-style: italic; color: var(--muted); }
+  .sec { margin: 1rem 0; }
+  .quiz-item { border-left: 3px solid var(--rule); padding-left: .85rem; margin: .75rem 0; }
+  .quiz-item li.ok { color: var(--ok); font-weight: 600; }
+  .note { color: var(--ink-soft); font-size: .95rem; }
+  details.qnode { border: 1px solid var(--rule); border-radius: 10px; background: var(--paper); margin: .4rem 0; padding: .35rem .6rem; }
+  details.qnode summary { cursor: pointer; font-weight: 500; }
+  .qid { font-family: "JetBrains Mono", monospace; font-size: .75rem; color: var(--accent); margin-right: .35rem; }
+  .qbody { padding: .4rem 0 .5rem .4rem; }
+  a.pdf { display: inline-block; margin: .2rem .4rem .2rem 0; font-size: .85rem; }
+  .wiki-grid { display: grid; gap: .85rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .wiki-card .tag { font-size: .72rem; font-family: "JetBrains Mono", monospace; color: var(--muted); text-transform: uppercase; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  th, td { border-bottom: 1px solid var(--rule); padding: .55rem .4rem; text-align: left; vertical-align: top; }
+  th { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  pre.nb { background: #1c1916; color: #b7f0c7; padding: 1rem; border-radius: 10px; overflow: auto; max-height: 280px; font-size: .75rem; line-height: 1.45; }
+  .side-nav { display: flex; flex-wrap: wrap; gap: .4rem .75rem; font-size: .82rem; margin: .75rem 0 1.25rem; }
+  .side-nav a { color: var(--ink-soft); text-decoration: none; border: 1px solid var(--rule); border-radius: 999px; padding: .2rem .65rem; background: var(--paper); }
+  footer { padding: 2rem 0 3rem; color: var(--muted); font-size: .85rem; border-top: 1px solid var(--rule); margin-top: 1rem; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">Noether Operadic Course</a>
+    <nav class="nav-links">
+      <a href="#modules">Modules</a>
+      <a href="#tree">Question Tree</a>
+      <a href="#wiki">Wiki</a>
+      <a href="#thesis">Thesis</a>
+      <a href="#sources">Sources</a>
+    </nav>
+  </div>
+</header>
+<div id="mount"></div>
+<footer>
+  <div class="wrap">Operadic Compositionality — Noether Course · public deploy<br/>
+  Source: <a href="https://github.com/manutej/noether-operadic-course">github.com/manutej/noether-operadic-course</a></div>
+</footer>
+<script src="part0.js"></script>
+<script src="part1.js"></script>
+<script src="part2.js"></script>
+<script src="part3.js"></script>
+<script>
+document.getElementById('mount').innerHTML = (window.__COURSE_PARTS||[]).join('');
+</script>
+</body>
+</html>

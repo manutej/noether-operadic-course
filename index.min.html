@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Operadic Compositionality — Noether Course</title>
+<meta name="description" content="Interactive course and PhD-level thesis on operadic question trees, Noether symmetries, and compositional systems." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #f3ecdc; --paper-deep: #e8dfc8; --ink: #1c1916; --ink-soft: #3f3a34;
+    --muted: #6b645a; --rule: #cfc4ad; --surface: #faf6ec; --accent: #8b3a2a; --ok: #2f6b4f;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; font-family: "DM Sans", system-ui, sans-serif; background: var(--paper); color: var(--ink); line-height: 1.55; }
+  a { color: var(--accent); }
+  code, .mono { font-family: "JetBrains Mono", monospace; font-size: 0.9em; }
+  h1,h2,h3,h4, .display { font-family: "Newsreader", Georgia, serif; font-weight: 600; letter-spacing: -0.02em; }
+  header { position: sticky; top: 0; z-index: 40; background: rgba(243,236,220,0.94); backdrop-filter: blur(10px); border-bottom: 1px solid var(--rule); }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 1.25rem; }
+  .nav { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; align-items: center; justify-content: space-between; padding: .85rem 0; }
+  .brand { font-family: "Newsreader", serif; font-size: 1.15rem; color: var(--ink); text-decoration: none; }
+  .nav-links { display: flex; flex-wrap: wrap; gap: .85rem; font-size: .9rem; }
+  .nav-links a { color: var(--ink-soft); text-decoration: none; }
+  .nav-links a:hover { color: var(--accent); }
+  .stamp { display: inline-block; font-family: "JetBrains Mono", monospace; font-size: .65rem; letter-spacing: .04em; text-transform: uppercase; border: 1.5px solid var(--accent); color: var(--accent); padding: .15rem .5rem; transform: rotate(-2deg); }
+  .hero { padding: 2.5rem 0 1rem; }
+  .hero h1 { font-size: clamp(2rem, 4vw, 3rem); line-height: 1.1; max-width: 18ch; margin: .75rem 0; }
+  .lede { font-size: 1.05rem; color: var(--ink-soft); max-width: 68ch; }
+  .cta { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1.25rem; }
+  .btn { display: inline-block; border-radius: 8px; padding: .65rem 1rem; font-size: .9rem; font-weight: 500; text-decoration: none; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); }
+  .btn.ghost { background: transparent; color: var(--ink); }
+  .btn.soft { background: var(--surface); color: var(--ink-soft); border-color: var(--rule); }
+  .grid2 { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .card { background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 1rem 1.1rem; }
+  .card a { text-decoration: none; color: inherit; display: block; }
+  .kicker { font-family: "JetBrains Mono", monospace; font-size: .7rem; text-transform: uppercase; color: var(--muted); letter-spacing: .06em; }
+  .panel { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 1.25rem 1.35rem; margin: 1rem 0; }
+  section.block { padding: 2rem 0; border-top: 1px solid var(--rule); }
+  section.block h2 { font-size: 1.75rem; margin: 0 0 .35rem; }
+  .muted { color: var(--muted); }
+  .module .mod-num { font-family: "JetBrains Mono", monospace; font-size: .72rem; text-transform: uppercase; color: var(--muted); letter-spacing: .06em; }
+  .epithet { font-style: italic; color: var(--muted); }
+  .sec { margin: 1rem 0; }
+  .quiz-item { border-left: 3px solid var(--rule); padding-left: .85rem; margin: .75rem 0; }
+  .quiz-item li.ok { color: var(--ok); font-weight: 600; }
+  .note { color: var(--ink-soft); font-size: .95rem; }
+  details.qnode { border: 1px solid var(--rule); border-radius: 10px; background: var(--paper); margin: .4rem 0; padding: .35rem .6rem; }
+  details.qnode summary { cursor: pointer; font-weight: 500; }
+  .qid { font-family: "JetBrains Mono", monospace; font-size: .75rem; color: var(--accent); margin-right: .35rem; }
+  .qbody { padding: .4rem 0 .5rem .4rem; }
+  a.pdf { display: inline-block; margin: .2rem .4rem .2rem 0; font-size: .85rem; }
+  .wiki-grid { display: grid; gap: .85rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .wiki-card .tag { font-size: .72rem; font-family: "JetBrains Mono", monospace; color: var(--muted); text-transform: uppercase; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  th, td { border-bottom: 1px solid var(--rule); padding: .55rem .4rem; text-align: left; vertical-align: top; }
+  th { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  pre.nb { background: #1c1916; color: #b7f0c7; padding: 1rem; border-radius: 10px; overflow: auto; max-height: 280px; font-size: .75rem; line-height: 1.45; }
+  .side-nav { display: flex; flex-wrap: wrap; gap: .4rem .75rem; font-size: .82rem; margin: .75rem 0 1.25rem; }
+  .side-nav a { color: var(--ink-soft); text-decoration: none; border: 1px solid var(--rule); border-radius: 999px; padding: .2rem .65rem; background: var(--paper); }
+  footer { padding: 2rem 0 3rem; color: var(--muted); font-size: .85rem; border-top: 1px solid var(--rule); margin-top: 1rem; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">Noether Operadic Course</a>
+    <nav class="nav-links">
+      <a href="#modules">Modules</a>
+      <a href="#tree">Question Tree</a>
+      <a href="#wiki">Wiki</a>
+      <a href="#thesis">Thesis</a>
+      <a href="#sources">Sources</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap" id="top">
+  <div class="hero">
+    <span class="stamp">Public course · verified substrate</span>
+    <h1 class="display">Operadic question trees, Noetherian invariants, and compositional systems</h1>
+    <p class="lede">A conservation-constrained interactive course and PhD-level thesis synthesizing what is already known: the questions operad (Bottman–Richardson 2026), double operadic systems (Libkind–Myers 2025), factorization-algebraic Noether theorems, Lie operads, and graph complexes — taught through atomic compositional questions.</p>
+    <div class="cta">
+      <a class="btn" href="#mod-0">Start Module 0</a>
+      <a class="btn ghost" href="#tree">Explore question tree</a>
+      <a class="btn soft" href="#thesis">Read the thesis</a>
+    </div>
+  </div>
+
+  <section class="block" id="curriculum">
+    <h2 class="display">Curriculum modules</h2>
+    <p class="muted">Prerequisite-respecting path · 9 modules · 19 wiki entries · 22 sources</p>
+    <div class="grid2" style="margin-top:1rem">
+      <div class="card"><a href="#mod-0"><div class="kicker">Module 0</div><div class="display" style="font-size:1.15rem;margin-top:.25rem">Orientation</div><div class="epithet" style="margin-top:.25rem;font-size:.9rem">How this course conserves truth</div></a></div><div class="card"><a href="#mod-1"><div class="kicker">Module 1</div><div class="display" style="font-size:1.15rem;margin-top:.25rem">Operads as Compositional Algebra</div><div class="epithet" style="margin-top:.25rem;font-size:.9rem">Many-in, one-out, composed by substitution</div></a></div><div class="card"><a href="#mod-2"><div class="kicker">Module 2</div><div class="display" style="font-size:1.15rem;margin-top:.25rem">The Questions Operad</div><div class="epithet" style="margin-top:.25rem;font-size:.9rem">Question templates as operations</div></a></div><div class="card"><a href="#mod-3"><div class="kicker">Module 3</div><div class="display" style="font-size:1.15rem;margin-top:.25rem">Double Operadic Systems</div><div class="epithet" style="margin-top:.25rem;font-size:.9rem">Interfaces, interactions, open systems</div></a></div><div class="card"><a href="#mod-4"><div class="kicker">Module 4</div><div class="display" style="font-size:1.15rem;margin-top:.25rem">Noether’s Theorem & Conserved Quantities</div><div class="epithet" style="margin-top:.25rem;font-size:.9rem">Symmetry implies conservation</div></a></div><div class="card"><a href="#mod-5"><div class="kicker">Module 5</div><div class="display" style="font-size:1.15rem;margin-top:.25rem">Lie Operads & Graph Complexes</div><div class="epithet" style="margin-top:.25rem;font-size:.9rem">Brackets on edges, Jacobi on flows</div></a></div><div class="card"><a href="#mod-6"><div class="kicker">Module 6</div><div class="display" style="font-size:1.15rem;margin-top:.25rem">QA-Graphs & Noether on Question Trees</div><div class="epithet" style="margin-top:.25rem;font-size:.9rem">Symmetries of the answer space</div></a></div><div class="card"><a href="#mod-7"><div class="kicker">Module 7</div><div class="display" style="font-size:1.15rem;margin-top:.25rem">Meta-Operadic Research Method</div><div class="epithet" style="margin-top:.25rem;font-size:.9rem">Question trees as a research instrument</div></a></div><div class="card"><a href="#mod-8"><div class="kicker">Module 8</div><div class="display" style="font-size:1.15rem;margin-top:.25rem">Symmetries of the Knowledge Space</div><div class="epithet" style="margin-top:.25rem;font-size:.9rem">Wiki, dualities, and meta-structure</div></a></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="grid2">
+      <div class="card">
+        <h3 class="display" style="margin-top:0">Assumed knowledge</h3>
+        <ul><li>Basic category theory: objects, morphisms, functors</li><li>Undergraduate abstract algebra: groups, rings, free structures</li><li>Familiarity with trees as combinatorial objects</li><li>High-level awareness of LLM multi-step reasoning (Chain-of-Thought)</li></ul>
+      </div>
+      <div class="card">
+        <h3 class="display" style="margin-top:0">Core literature</h3>
+        <ul><li><a href="https://arxiv.org/pdf/2606.13634" target="_blank" rel="noopener"><strong>BottmanRichardson2026 (2026)</strong></a> — Operads for compositional reasoning in LLMs</li>
+<li><a href="https://arxiv.org/pdf/2606.13649" target="_blank" rel="noopener"><strong>BottmanLiuRichardson2026 (2026)</strong></a> — Operadic consistency: a label-free signal for compositional reasoning failures in LLMs</li>
+<li><a href="https://arxiv.org/pdf/2505.18329" target="_blank" rel="noopener"><strong>LibkindMyers2025 (2025)</strong></a> — Towards a double operadic theory of systems</li>
+<li><a href="https://arxiv.org/pdf/1810.06534" target="_blank" rel="noopener"><strong>GwilliamWilliams2018 (2018)</strong></a> — Higher Kac-Moody algebras and symmetries of holomorphic field theories</li>
+<li><a href="https://arxiv.org/pdf/2310.06137" target="_blank" rel="noopener"><strong>CostelloGwilliam2023 (2023)</strong></a> — Factorization algebra</li>
+<li><a href="https://arxiv.org/pdf/2006.14741" target="_blank" rel="noopener"><strong>Baez2020 (2020)</strong></a> — Getting to the Bottom of Noether's Theorem</li>
+<li><a href="https://arxiv.org/pdf/1009.1654" target="_blank" rel="noopener"><strong>Willwacher2010 (2010)</strong></a> — M. Kontsevich's graph complex and the Grothendieck-Teichmueller Lie algebra</li>
+<li><a href="https://arxiv.org/pdf/hep-th/9307114" target="_blank" rel="noopener"><strong>KimuraStasheffVoronov1993 (1993)</strong></a> — On operad structures of moduli spaces and string theory</li>
+<li><a href="https://arxiv.org/pdf/alg-geom/9704009" target="_blank" rel="noopener"><strong>Kapranov1997 (1997)</strong></a> — Rozansky-Witten invariants via Atiyah classes</li>
+<li><a href="https://arxiv.org/pdf/2508.01886" target="_blank" rel="noopener"><strong>Ferraioli2025 (2025)</strong></a> — A Gentle Introduction to Algebraic Operads</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="modules">
+    <h2 class="display">Full modules</h2>
+    <div class="side-nav"><a href="#mod-0">M0. Orientation</a>
+<a href="#mod-1">M1. Operads as Compositional Algebra</a>
+<a href="#mod-2">M2. The Questions Operad</a>
+<a href="#mod-3">M3. Double Operadic Systems</a>
+<a href="#mod-4">M4. Noether’s Theorem & Conserved Quantities</a>
+<a href="#mod-5">M5. Lie Operads & Graph Complexes</a>
+<a href="#mod-6">M6. QA-Graphs & Noether on Question Trees</a>
+<a href="#mod-7">M7. Meta-Operadic Research Method</a>
+<a href="#mod-8">M8. Symmetries of the Knowledge Space</a></div>
+    <article id="mod-0" class="module panel">
+      <div class="mod-num">Module 0 · Module 0 · Orientation</div>
+      <h2>Orientation</h2>
+      <p class="epithet">How this course conserves truth</p>
+      <p><strong>Objective:</strong> State the four conserved quantities of this courseware and navigate the wiki, question tree, and thesis as a single research system.</p>
+      <p>Noether dual-loop pedagogy: every fact is grounded, every lesson respects prerequisites, design identity is locked, and learner knowledge is monotone.</p>
+      <p class="lede">This course is a conservation-constrained research instrument. Every fact is cited. Every lesson respects what you already know. The design is locked so identity does not drift. Your knowledge state only grows.</p>
+      <div class="sec"><h4>Four conserved quantities</h4><p>Truth: every factual claim traces to a primary source with a live URL. We prefer arXiv PDFs and peer-reviewed surveys.</p><p>Design identity: one scholarly visual language (warm paper, graphite ink, geometric diagrams) across wiki, lessons, and thesis.</p><p>Access: keyboard navigation, readable contrast, reduced-motion support.</p><p>Learner knowledge: a lesson may only use concepts already taught (or assumed). The concept graph is a DAG — no circular prerequisites.</p></div><div class="sec"><h4>Three instruments, one space</h4><p>The Course teaches modules in prerequisite order.</p><p>The Wiki is the single fact substrate — every lesson draws from it.</p><p>The Question Tree is the research method made visible: atomic questions with attached literature, never prematurely collapsed into categories.</p><p>The Thesis is the PhD-level written synthesis: what is known, what is open, and only at the end what might be possible.</p></div><div class="sec"><h4>How to work</h4><p>Read modules in order for the first pass. Use the wiki when a term appears. Expand question-tree nodes when you want the research frontier. Return to quizzes for retrieval practice.</p><p>The method you will learn is itself the method that built this course: operadic question decomposition with literature alignment and consistency collapse.</p></div>
+      <h3>Key terms</h3><ul><li><strong>Conserved quantity (courseware)</strong> — A property that must hold after every rewrite: truth, design, access, learner-K.</li><li><strong>Fact substrate</strong> — The wiki — single source of cited truth for all lessons.</li></ul>
+      <h3>Check yourself</h3><p class="muted">Correct answers highlighted in green.</p><div class="quiz-item"><p><strong>Q1.</strong> </p>
+        <ul><li class="">Every lesson must use at least three colors</li><li class="ok">Every factual claim must be grounded in a resolvable source</li><li class="">Every diagram must animate</li><li class="">Every module must introduce a novel theorem</li></ul>
+        </div><div class="quiz-item"><p><strong>Q2.</strong> </p>
+        <ul><li class="">Using too many references</li><li class="ok">Premature collapse of questions into categories</li><li class="">Writing too slowly</li><li class="">Preferring arXiv over blogs</li></ul>
+        </div>
+      <h3>Further reading</h3><ul><li><a href="https://arxiv.org/pdf/2606.13634" target="_blank" rel="noopener">BottmanRichardson2026 (2026)</a></li><li><a href="https://arxiv.org/pdf/2006.14741" target="_blank" rel="noopener">Baez2020 (2020)</a></li></ul>
+    </article>
+<article id="mod-1" class="module panel">
+      <div class="mod-num">Module 1 · Module 1 · Operads</div>
+      <h2>Operads as Compositional Algebra</h2>
+      <p class="epithet">Many-in, one-out, composed by substitution</p>
+      <p><strong>Objective:</strong> Define an operad, draw a composition tree, and explain algebras over an operad with a concrete example.</p>
+      <p>Operads organize multi-input operations and their substitution. Classic sources: May, Boardman–Vogt, Loday–Vallette, Markl.</p>
+      <p class="lede">Operads are the algebra of multi-input operations composed by substitution. They are the mathematical home for tree-shaped composition — and therefore for question trees.</p>
+      <div class="sec"><h4>Many-in, one-out</h4><p>An ordinary category composes one-in-one-out arrows. An operad composes n-ary operations: several inputs, one output. The fundamental move is substitution: plug the output of one operation into an input slot of another.</p><p>Combinatorially this yields trees. Algebraically it yields types of algebras: associative algebras (As), commutative algebras (Com), Lie algebras (Lie), and many more — including, as we will see, question-answering models.</p></div><div class="sec"><h4>Definition sketch</h4><p>A (symmetric) operad O in vector spaces (or sets, or spaces) assigns to each n ≥ 0 a space O(n) of n-ary operations, with:</p><p>(1) Composition maps O(k) ⊗ O(n₁) ⊗ ⋯ ⊗ O(nₖ) → O(n₁+⋯+nₖ) implementing substitution.</p><p>(2) Symmetric group actions O(n) ↷ Σₙ permuting inputs.</p><p>(3) A unit 1 ∈ O(1) for the identity operation.</p><p>An O-algebra is a space A with structure maps O(n) ⊗ A⊗ⁿ → A compatible with composition and symmetries.</p></div><div class="sec"><h4>Why topology cared — and why AI might</h4><p>May’s little n-cubes operads classify n-fold loop spaces. Boardman–Vogt and later homotopy theorists used operads to encode coherent higher homotopies.</p><p>In applied and AI settings, the same tree-shaped substitution language describes wiring of systems (Spivak), design of complex systems (Foley et al.), and — crucially — recursive question decomposition (Bottman–Richardson 2026).</p></div>
+      <h3>Key terms</h3><ul><li><strong>Arity</strong> — Number of inputs of an operation (n for O(n)).</li><li><strong>Substitution</strong> — Plugging outputs into input slots — operadic composition.</li><li><strong>O-algebra</strong> — Object equipped with O-operations satisfying the operad laws.</li></ul>
+      <h3>Check yourself</h3><p class="muted">Correct answers highlighted in green.</p><div class="quiz-item"><p><strong>Q1.</strong> </p>
+        <ul><li class="">Composing two parallel arrows of equal type</li><li class="ok">Substituting outputs of operations into inputs of other operations</li><li class="">Taking tensor products of monoids only</li><li class="">Quotienting by a group action alone</li></ul>
+        </div><div class="quiz-item"><p><strong>Q2.</strong> </p>
+        <ul><li class="">A set of axioms with no models</li><li class="ok">A carrier object with structure maps realizing the operad’s operations</li><li class="">Always a topological space</li><li class="">The same as a category with one object</li></ul>
+        </div>
+      <h3>Further reading</h3><ul><li><a href="https://www.math.univ-paris13.fr/~vallette/Operads.pdf" target="_blank" rel="noopener">LodayVallette2012 (2012)</a></li><li><a href="https://www.math.uchicago.edu/~may/BOOKS/gils.pdf" target="_blank" rel="noopener">May1972 (1972)</a></li><li><a href="https://arxiv.org/pdf/2508.01886" target="_blank" rel="noopener">Ferraioli2025 (2025)</a></li><li><a href="https://arxiv.org/pdf/math/0305049" target="_blank" rel="noopener">Leinster2003 (2003)</a></li></ul>
+    </article>
+<article id="mod-2" class="module panel">
+      <div class="mod-num">Module 2 · Module 2 · Questions Operad</div>
+      <h2>The Questions Operad</h2>
+      <p class="epithet">Question templates as operations</p>
+      <p><strong>Objective:</strong> State the definition of the questions operad, interpret QA models as Q-algebras, and relate tree decomposition to operadic composition.</p>
+      <p>arXiv:2606.13634 defines Q; arXiv:2606.13649 measures operadic consistency as collapse fidelity across partial decompositions.</p>
+      <p class="lede">Bottman & Richardson (2026) define the questions operad Q: operations are question templates; composition is substitution of sub-answers. QA models are Q-algebras. Consistency is measurable.</p>
+      <div class="sec"><h4>From prompting folklore to algebra</h4><p>Question decomposition — breaking a hard query into sub-queries and composing answers — is ubiquitous in multi-hop QA and agentic systems. Until 2026 it lacked a compact mathematical home.</p><p>The questions operad Q takes question templates as operations. Composition corresponds to filling a template’s slots with answers obtained from sub-questions — exactly tree-shaped substitution.</p></div><div class="sec"><h4>QA models as algebras</h4><p>A question-answering model becomes an algebra over Q when it supplies, for each template, a map from sub-answers to a parent answer. Different models are different algebras; the operad is shared structure.</p><p>This separation matters: evaluation can probe the algebra (the model) against laws that live in the operad (the templates and composition).</p></div><div class="sec"><h4>Operadic consistency</h4><p>The companion paper (Bottman–Liu–Richardson 2026) defines operadic consistency: the model’s direct answer to a compositional query should agree with the answer obtained by composing a stated decomposition.</p><p>Empirically, this label-free signal correlates strongly with accuracy on multi-hop benchmarks and can outperform temperature-based self-consistency baselines.</p><p>In our research method, operadic consistency is the compositionality test for verbal, non-deterministic domains.</p></div><div class="sec"><h4>Relation to Tree of Thoughts</h4><p>Yao et al. (2023) Tree of Thoughts explores multiple reasoning paths with search. ToT is a policy over trees; Q is an algebraic type for trees of questions. They are complementary: ToT can be read as search in a free (or free-ish) algebra for Q-like structure, while operadic consistency supplies an invariant the search should respect.</p></div>
+      <h3>Key terms</h3><ul><li><strong>Question template</strong> — An n-ary operation in Q specifying how sub-answers form a parent answer.</li><li><strong>Operadic consistency</strong> — Direct answer ≈ composed answer from a decomposition tree.</li></ul>
+      <h3>Check yourself</h3><p class="muted">Correct answers highlighted in green.</p><div class="quiz-item"><p><strong>Q1.</strong> </p>
+        <ul><li class="">Concatenating token embeddings</li><li class="ok">Substitution of sub-answers into parent question templates</li><li class="">Gradient descent on a loss</li><li class="">Sorting questions alphabetically</li></ul>
+        </div><div class="quiz-item"><p><strong>Q2.</strong> </p>
+        <ul><li class="">Whether two random seeds match</li><li class="ok">Agreement between direct answers and composed answers from decompositions</li><li class="">Whether the model is open source</li><li class="">Token-level perplexity only</li></ul>
+        </div>
+      <h3>Further reading</h3><ul><li><a href="https://arxiv.org/pdf/2606.13634" target="_blank" rel="noopener">BottmanRichardson2026 (2026)</a></li><li><a href="https://arxiv.org/pdf/2606.13649" target="_blank" rel="noopener">BottmanLiuRichardson2026 (2026)</a></li><li><a href="https://arxiv.org/pdf/2305.10601" target="_blank" rel="noopener">Yao2023 (2023)</a></li></ul>
+    </article>
+<article id="mod-3" class="module panel">
+      <div class="mod-num">Module 3 · Module 3 · Double Operads</div>
+      <h2>Double Operadic Systems</h2>
+      <p class="epithet">Interfaces, interactions, open systems</p>
+      <p><strong>Objective:</strong> Explain double operads for open systems and how interfaces compose with interactions in a systems-theoretic setting.</p>
+      <p>arXiv:2505.18329 packages open systems as modules over a double category of interfaces — the double algebraic theory for compositional systems.</p>
+      <p class="lede">Libkind & Myers (2025) present a double operadic theory of systems: open systems as modules over a double category of interfaces and interactions — compositional systems theory with two axes of composition.</p>
+      <div class="sec"><h4>Why double?</h4><p>Ordinary operads compose operations along trees. Systems engineering also needs a horizontal story: interfaces that connect, resources that flow, maps between systems.</p><p>Double operads (and the related double-categorical packages in DOTS) let interactions act on several independent component systems in parallel, returning a composite system — critical for systems-of-systems.</p></div><div class="sec"><h4>Open systems as modules</h4><p>DOTS packages a collection of open systems, their interactions, and their maps into a symmetric monoidal loose right module of systems over a symmetric monoidal double category of interfaces and interactions.</p><p>Examples in the paper include open Petri nets and other applied compositional systems — connecting to Spivak-style wiring diagrams and Foley et al.’s operads for design.</p></div><div class="sec"><h4>Link to question research</h4><p>Knowledge domains and agentic pipelines can be read as open systems with typed interfaces (schemas, tools, retrieval ports). Double operadic composition is a candidate algebra for ‘research systems’ that compose domain modules with interaction protocols (search, collapse, consistency check).</p><p>This course does not claim a finished double-operadic model of research agents; it situates DOTS as the existing formal systems theory closest to that ambition.</p></div>
+      <h3>Key terms</h3><ul><li><strong>Open system</strong> — A system with typed interfaces to an environment or other systems.</li><li><strong>Double category</strong> — Category-like structure with two composable directions (e.g. horizontal/vertical).</li></ul>
+      <h3>Check yourself</h3><p class="muted">Correct answers highlighted in green.</p><div class="quiz-item"><p><strong>Q1.</strong> </p>
+        <ul><li class="">Closed monoids with no boundary</li><li class="ok">Modules over a double category of interfaces and interactions</li><li class="">Unstructured bags of differential equations</li><li class="">Single morphisms in Set</li></ul>
+        </div>
+      <h3>Further reading</h3><ul><li><a href="https://arxiv.org/pdf/2505.18329" target="_blank" rel="noopener">LibkindMyers2025 (2025)</a></li><li><a href="https://arxiv.org/pdf/1305.0297" target="_blank" rel="noopener">Spivak2013 (2013)</a></li><li><a href="https://arxiv.org/pdf/2101.11115" target="_blank" rel="noopener">Foley2021 (2021)</a></li><li><a href="https://arxiv.org/pdf/1803.05316" target="_blank" rel="noopener">FongSpivak2018 (2018)</a></li></ul>
+    </article>
+<article id="mod-4" class="module panel">
+      <div class="mod-num">Module 4 · Module 4 · Noether</div>
+      <h2>Noether’s Theorem & Conserved Quantities</h2>
+      <p class="epithet">Symmetry implies conservation</p>
+      <p><strong>Objective:</strong> State Noether’s theorem, explain conserved quantities from generators (Baez), and locate Noether currents in factorization algebras.</p>
+      <p>Baez arXiv:2006.14741; Costello–Gwilliam factorization algebras; Gwilliam–Williams higher symmetries arXiv:1810.06534.</p>
+      <p class="lede">Symmetry implies conservation. From Emmy Noether’s 1918 theorems through Baez’s foundational analysis to factorization-algebraic Noether currents — the modern toolkit for invariants.</p>
+      <div class="sec"><h4>The classical statement</h4><p>Noether’s first theorem: every continuous symmetry of the action of a physical system (with appropriate regularity) corresponds to a conservation law. Time translation ↔ energy; spatial translation ↔ momentum; gauge symmetry ↔ charge.</p><p>The conserved quantity is often called a Noether charge; the associated flow is a Noether current.</p></div><div class="sec"><h4>Getting to the bottom (Baez)</h4><p>Baez (2020) examines the assumptions behind the symmetry–conservation link in classical and quantum settings. A key pattern: map observables to generators so each observable generates a one-parameter group that preserves itself — then conservation follows.</p><p>This clarification is useful outside physics: it tells us what structure we must exhibit on a QA-graph before we may honestly speak of ‘Noether charges of insight’.</p></div><div class="sec"><h4>Factorization algebras</h4><p>Costello–Gwilliam develop factorization algebras as local-to-global observables of field theories. Within this language, symmetries act and Noether theorems can be formulated beyond purely perturbative regimes.</p><p>Gwilliam–Williams (2018) construct higher Kac–Moody-type algebras encoding symmetries of holomorphic field theories — a model of ‘higher’ conserved structure.</p></div>
+      <h3>Key terms</h3><ul><li><strong>Noether current</strong> — Local flow whose integral (charge) is conserved by a symmetry.</li><li><strong>Factorization algebra</strong> — Local-to-global assignment of observables with disjoint-union multiplications.</li></ul>
+      <h3>Check yourself</h3><p class="muted">Correct answers highlighted in green.</p><div class="quiz-item"><p><strong>Q1.</strong> </p>
+        <ul><li class="">Random variables only</li><li class="ok">Conservation laws / conserved quantities</li><li class="">Discontinuous jumps of topology only</li><li class="">NP-hardness</li></ul>
+        </div><div class="quiz-item"><p><strong>Q2.</strong> </p>
+        <ul><li class="">URLs</li><li class="ok">Generators of one-parameter groups</li><li class="">Fonts</li><li class="">Datasets</li></ul>
+        </div>
+      <h3>Further reading</h3><ul><li><a href="https://arxiv.org/pdf/2006.14741" target="_blank" rel="noopener">Baez2020 (2020)</a></li><li><a href="https://arxiv.org/pdf/2310.06137" target="_blank" rel="noopener">CostelloGwilliam2023 (2023)</a></li><li><a href="https://arxiv.org/pdf/1810.06534" target="_blank" rel="noopener">GwilliamWilliams2018 (2018)</a></li></ul>
+    </article>
+<article id="mod-5" class="module panel">
+      <div class="mod-num">Module 5 · Module 5 · Lie & Graphs</div>
+      <h2>Lie Operads & Graph Complexes</h2>
+      <p class="epithet">Brackets on edges, Jacobi on flows</p>
+      <p><strong>Objective:</strong> Define the Lie operad, state the Jacobi identity, and explain how graph complexes model infinitesimal symmetries on graphs.</p>
+      <p>Trimble notes; Willwacher arXiv:1009.1654; Kimura–Stasheff–Voronov hep-th/9307114; Kapranov alg-geom/9704009.</p>
+      <p class="lede">The Lie operad encodes brackets and Jacobi. Graph complexes give geometric models for related Lie structures — a language for infinitesimal symmetries on graphs, including candidate QA-graphs.</p>
+      <div class="sec"><h4>Lie operad</h4><p>Algebras over the Lie operad are Lie algebras: a bilinear bracket that is skew-symmetric and satisfies the Jacobi identity.</p><p>Trimble’s notes present the operad combinatorially; Ferraioli’s gentle introduction situates Lie among standard algebraic operads.</p></div><div class="sec"><h4>Jacobi as coherence of twists</h4><p>Jacobi is not optional decoration: it is the coherence law for triple brackets. In the Lego-castle metaphor, multi-twists of symmetries must cycle without warping the build.</p><p>Any proposed bracket on edge transformations of a question tree must satisfy Jacobi to be a Lie structure.</p></div><div class="sec"><h4>Graph complexes</h4><p>Kontsevich’s graph complex organizes graphs with a differential related to edge operations. Willwacher (2010) proved that its degree-0 cohomology is the Grothendieck–Teichmüller Lie algebra grt₁ — a deep link between graphs and Lie theory.</p><p>Kimura–Stasheff–Voronov related operads of moduli spaces to homotopy Lie algebras in string theory. Kapranov’s work connects Atiyah classes and Lie-algebraic invariants.</p><p>For this course: graph complexes are the best existing formal home for ‘Lie brackets on edges of a graph’ when the graph is combinatorial rather than a smooth manifold.</p></div>
+      <h3>Key terms</h3><ul><li><strong>Lie bracket</strong> — Skew-symmetric bilinear operation [−,−] with Jacobi.</li><li><strong>Graph complex</strong> — Chain complex of graphs encoding combinatorial Lie/deformation data.</li></ul>
+      <h3>Check yourself</h3><p class="muted">Correct answers highlighted in green.</p><div class="quiz-item"><p><strong>Q1.</strong> </p>
+        <ul><li class="">Only matrix multiplication order</li><li class="ok">Triple brackets in a Lie algebra</li><li class="">CSS specificity</li><li class="">Bayes’ rule</li></ul>
+        </div><div class="quiz-item"><p><strong>Q2.</strong> </p>
+        <ul><li class="">TCP/IP</li><li class="ok">The Grothendieck–Teichmüller Lie algebra</li><li class="">JPEG compression</li><li class="">PageRank</li></ul>
+        </div>
+      <h3>Further reading</h3><ul><li><a href="https://math.ucr.edu/home/baez/trimble/trimble_lie_operad.pdf" target="_blank" rel="noopener">TrimbleLie (n.d.)</a></li><li><a href="https://arxiv.org/pdf/1009.1654" target="_blank" rel="noopener">Willwacher2010 (2010)</a></li><li><a href="https://arxiv.org/pdf/hep-th/9307114" target="_blank" rel="noopener">KimuraStasheffVoronov1993 (1993)</a></li></ul>
+    </article>
+<article id="mod-6" class="module panel">
+      <div class="mod-num">Module 6 · Module 6 · Noether on QA-Graphs</div>
+      <h2>QA-Graphs & Noether on Question Trees</h2>
+      <p class="epithet">Symmetries of the answer space</p>
+      <p><strong>Objective:</strong> Model a question tree as a graph, identify candidate symmetries, and propose conserved insight cores under operadic substitution.</p>
+      <p>Combines Bottman consistency, graph-complex Lie structure, and factorization-algebra Noether currents on the QA-graph.</p>
+      <p class="lede">Assemble the pieces: question trees as graphs, Lie language for edge symmetries, operadic consistency as collapse fidelity, conserved insight cores as candidate Noether charges.</p>
+      <div class="sec"><h4>The QA-graph</h4><p>Nodes: questions and answers (or question templates and answer values). Edges: ‘is sub-question of’, ‘answers’, ‘substitutes into’. The composition tree of a decomposition is a subgraph.</p><p>Symmetries of interest include: permuting independent sibling sub-questions; replacing a sub-tree by another with the same compositional type; continuous deformations in embedding space that preserve answer equality up to tolerance.</p></div><div class="sec"><h4>What already exists</h4><p>Operadic consistency already measures a form of invariance under partial collapse (Bottman–Liu–Richardson).</p><p>Lie/graph-complex theory supplies brackets and Jacobi for graph edges (Willwacher et al.).</p><p>Factorization-algebra Noether theorems supply a template for currents from symmetries (Costello–Gwilliam, Gwilliam–Williams).</p></div><div class="sec"><h4>What is still open (honestly)</h4><p>A fully rigorous Noether theorem for discrete QA-graphs with LLM-valued algebras is not a standard textbook theorem as of 2026. This module maps a research program, not a closed proof.</p><p>Candidate conserved quantities: claims that survive all sibling permutations; facts present in every consistent collapse; structural types (arity signatures) invariant under substitution.</p><p>Candidate currents: how ‘insight mass’ flows along edges when a tree is rewritten — still metaphorical until a precise generator map is fixed (Baez’s lesson).</p></div>
+      <h3>Key terms</h3><ul><li><strong>QA-graph</strong> — Graph of questions, answers, and substitution edges.</li><li><strong>Collapse fidelity</strong> — Agreement between direct and composed answers (operadic consistency).</li></ul>
+      <h3>Check yourself</h3><p class="muted">Correct answers highlighted in green.</p><div class="quiz-item"><p><strong>Q1.</strong> </p>
+        <ul><li class="">A claim that appears only in one leaf and nowhere else</li><li class="ok">A claim that remains after reordering independent sub-questions and re-collapsing</li><li class="">The raw token count of a prompt</li><li class="">A random seed</li></ul>
+        </div>
+      <h3>Further reading</h3><ul><li><a href="https://arxiv.org/pdf/2606.13649" target="_blank" rel="noopener">BottmanLiuRichardson2026 (2026)</a></li><li><a href="https://arxiv.org/pdf/2006.14741" target="_blank" rel="noopener">Baez2020 (2020)</a></li><li><a href="https://arxiv.org/pdf/1009.1654" target="_blank" rel="noopener">Willwacher2010 (2010)</a></li><li><a href="https://arxiv.org/pdf/1810.06534" target="_blank" rel="noopener">GwilliamWilliams2018 (2018)</a></li></ul>
+    </article>
+<article id="mod-7" class="module panel">
+      <div class="mod-num">Module 7 · Module 7 · Research Method</div>
+      <h2>Meta-Operadic Research Method</h2>
+      <p class="epithet">Question trees as a research instrument</p>
+      <p><strong>Objective:</strong> Execute a full meta-operadic loop: decompose, align literature, answer leaves, collapse, extract conserved quantities.</p>
+      <p>The operadic-question-decomposition protocol as a reproducible research skill, with failure modes (premature category collapse).</p>
+      <p class="lede">Turn the theory into a loop you can run: decompose → align literature → answer leaves → collapse → extract conserved quantities → recurse. Avoid premature category collapse.</p>
+      <div class="sec"><h4>The loop</h4><p>1. Initialization: partition the domain into Level-1 atomic questions that cover without gap or overlap.</p><p>2. Recursive decomposition: apply arity-n templates to each node; every child remains a genuine question.</p><p>3. Literature alignment: attach full PDFs that help answer that node (not generic topic dumps).</p><p>4. Answer & collapse: answer leaves; compose upward; score operadic consistency.</p><p>5. Conserved quantities: list claims invariant under the symmetries you can name.</p><p>6. Recurse or reconstitute: either deepen a branch or write the synthesis.</p></div><div class="sec"><h4>Failure modes</h4><p>Premature category collapse: renaming a question as a solved concept — you can no longer test composition.</p><p>Unprovenanced synthesis: merging papers without citation — breaks truth conservation.</p><p>Fidelity loss: high inconsistency between direct and composed answers — debug the algebra (model) or the templates.</p><p>Broken coherence: substitutions that do not reassociate — fix the operadic structure of your templates.</p></div><div class="sec"><h4>Adversarial multi-agent use</h4><p>In the Noether course pipeline, researchers fan out by topic; a single wiki-writer merges with provenance; lesson agents may only read the wiki; a meta-reviewer adversarially checks contradictions and hype.</p><p>The same pattern applies to question-tree research: separate agents for decompose / search / answer / collapse-check, with a conservation lens that rejects uncited claims.</p></div>
+      <h3>Key terms</h3><ul><li><strong>Atomic question</strong> — A concrete, answerable question — not a topic label.</li><li><strong>Premature collapse</strong> — Treating a question node as a finished category too early.</li></ul>
+      <h3>Check yourself</h3><p class="muted">Correct answers highlighted in green.</p><div class="quiz-item"><p><strong>Q1.</strong> </p>
+        <ul><li class="">Writing the conclusion</li><li class="ok">Partitioning the domain into atomic Level-1 questions</li><li class="">Deleting contradictory sources</li><li class="">Training a new model from scratch</li></ul>
+        </div>
+      <h3>Further reading</h3><ul><li><a href="https://arxiv.org/pdf/2606.13634" target="_blank" rel="noopener">BottmanRichardson2026 (2026)</a></li><li><a href="https://arxiv.org/pdf/2606.13649" target="_blank" rel="noopener">BottmanLiuRichardson2026 (2026)</a></li><li><a href="https://arxiv.org/pdf/2305.10601" target="_blank" rel="noopener">Yao2023 (2023)</a></li></ul>
+    </article>
+<article id="mod-8" class="module panel">
+      <div class="mod-num">Module 8 · Module 8 · Meta-space</div>
+      <h2>Symmetries of the Knowledge Space</h2>
+      <p class="epithet">Wiki, dualities, and meta-structure</p>
+      <p><strong>Objective:</strong> Navigate the course wiki, identify dualities and conserved motifs across modules, and state what remains open.</p>
+      <p>Category map of the research space: operads ↔ systems ↔ symmetries ↔ LLM compositionality.</p>
+      <p class="lede">The research space itself has symmetries: operad/algebra, symmetry/conservation, decompose/collapse, system/interface. Mapping them is part of understanding the field.</p>
+      <div class="sec"><h4>Category map of the space</h4><p>Foundations: operads, algebras, composition trees, higher operads.</p><p>LLM compositionality: questions operad, operadic consistency, Tree of Thoughts.</p><p>Systems: double operads, wiring diagrams, design operads.</p><p>Symmetry: Noether, factorization algebras, Lie operads, graph complexes.</p><p>Method: meta-operadic decomposition, failure modes, wiki discipline.</p></div><div class="sec"><h4>Recurring dualities</h4><p>Operad ↔ Algebra: structure vs. model (templates vs. QA system).</p><p>Symmetry ↔ Conservation: generator vs. invariant (Baez’s map).</p><p>Decompose ↔ Collapse: expansion vs. consistency check.</p><p>System ↔ Interface: DOTS modules vs. double category of boundaries.</p></div><div class="sec"><h4>What the wiki conserves</h4><p>Every entry carries source IDs. Related links form a graph. Category tags enable slicing. Symmetry fields record known dualities per concept.</p><p>Module 8 ends the taught sequence; the thesis and full bibliography continue as research instruments.</p></div>
+      <h3>Key terms</h3><ul><li><strong>Knowledge symmetry</strong> — A recurring duality or invariant motif across the research map.</li></ul>
+      <h3>Check yourself</h3><p class="muted">Correct answers highlighted in green.</p><div class="quiz-item"><p><strong>Q1.</strong> </p>
+        <ul><li class="">Database</li><li class="ok">Algebra (model)</li><li class="">PDF</li><li class="">Gradient</li></ul>
+        </div>
+      <h3>Further reading</h3><ul><li><a href="https://arxiv.org/pdf/2606.13634" target="_blank" rel="noopener">BottmanRichardson2026 (2026)</a></li><li><a href="https://arxiv.org/pdf/2505.18329" target="_blank" rel="noopener">LibkindMyers2025 (2025)</a></li><li><a href="https://arxiv.org/pdf/2006.14741" target="_blank" rel="noopener">Baez2020 (2020)</a></li><li><a href="https://arxiv.org/pdf/1009.1654" target="_blank" rel="noopener">Willwacher2010 (2010)</a></li></ul>
+    </article>
+  </section>
+
+  <section class="block" id="tree">
+    <h2 class="display">Operadic question tree</h2>
+    <p class="muted">Stay at the level of questions. Expand nodes, follow PDF links, reconstitute by collapse.</p>
+    <div class="panel"><details class="qnode" open>
+    <summary><span class="qid">L1-Q1</span> How do we formally define the meta-operad’s operations for decomposing a given body of knowledge into an initial set of atomic compositional questions?</summary>
+    <div class="qbody">
+      <p class="note">Root decomposition question — maps directly onto the questions operad Q.</p>
+      <p class="note"><strong>Conserved:</strong> Arity + substitution coherence are candidates for conserved structure.</p>
+      <div class="links"><a class="pdf" href="https://arxiv.org/pdf/2606.13634" target="_blank" rel="noopener">📄 BottmanRichardson2026 2026</a> <a class="pdf" href="https://arxiv.org/pdf/2505.18329" target="_blank" rel="noopener">📄 LibkindMyers2025 2025</a> <a class="pdf" href="https://arxiv.org/pdf/math/0305049" target="_blank" rel="noopener">📄 Leinster2003 2003</a> <a class="pdf" href="https://www.math.univ-paris13.fr/~vallette/Operads.pdf" target="_blank" rel="noopener">📄 LodayVallette2012 2012</a> <a class="pdf" href="https://www.math.uchicago.edu/~may/BOOKS/gils.pdf" target="_blank" rel="noopener">📄 May1972 1972</a> <a class="pdf" href="https://arxiv.org/pdf/1305.0297" target="_blank" rel="noopener">📄 Spivak2013 2013</a> <a class="pdf" href="https://arxiv.org/pdf/2101.11115" target="_blank" rel="noopener">📄 Foley2021 2021</a></div>
+      <details class="qnode" >
+    <summary><span class="qid">L2-1a</span> What is the arity signature for the decomposition operation in this meta-operad?</summary>
+    <div class="qbody">
+      
+      
+      <div class="links"><a class="pdf" href="https://arxiv.org/pdf/2606.13634" target="_blank" rel="noopener">📄 BottmanRichardson2026 2026</a> <a class="pdf" href="https://arxiv.org/pdf/2508.01886" target="_blank" rel="noopener">📄 Ferraioli2025 2025</a> <a class="pdf" href="https://arxiv.org/pdf/math/0601129" target="_blank" rel="noopener">📄 Markl2006 2006</a></div>
+      <details class="qnode" >
+    <summary><span class="qid">L3-1a-i</span> What generating operations specify branching from one input knowledge domain to n output questions?</summary>
+    <div class="qbody">
+      
+      
+      <div class="links"><a class="pdf" href="https://arxiv.org/pdf/2606.13634" target="_blank" rel="noopener">📄 BottmanRichardson2026 2026</a> <a class="pdf" href="https://arxiv.org/pdf/math/0305049" target="_blank" rel="noopener">📄 Leinster2003 2003</a></div>
+      
+    </div>
+  </details><details class="qnode" >
+    <summary><span class="qid">L3-1a-ii</span> How to ensure symmetry preservation in arity via Noether-like invariants on the question graph?</summary>
+    <div class="qbody">
+      
+      <p class="note"><strong>Conserved:</strong> Graph automorphisms that preserve meaning → conserved insight cores.</p>
+      <div class="links"><a class="pdf" href="https://arxiv.org/pdf/1009.1654" target="_blank" rel="noopener">📄 Willwacher2010 2010</a> <a class="pdf" href="https://arxiv.org/pdf/2006.14741" target="_blank" rel="noopener">📄 Baez2020 2020</a></div>
+      
+    </div>
+  </details>
+    </div>
+  </details><details class="qnode" >
+    <summary><span class="qid">L2-1b</span> How does the operad composition substitute sub-question sets into parent questions without losing domain fidelity?</summary>
+    <div class="qbody">
+      
+      
+      <div class="links"><a class="pdf" href="https://arxiv.org/pdf/2606.13634" target="_blank" rel="noopener">📄 BottmanRichardson2026 2026</a> <a class="pdf" href="https://arxiv.org/pdf/2606.13649" target="_blank" rel="noopener">📄 BottmanLiuRichardson2026 2026</a> <a class="pdf" href="https://arxiv.org/pdf/1803.05316" target="_blank" rel="noopener">📄 FongSpivak2018 2018</a></div>
+      <details class="qnode" >
+    <summary><span class="qid">L3-1b-i</span> What coherence conditions (Mac Lane pentagon / operadic associativity) govern multi-level substitution?</summary>
+    <div class="qbody">
+      
+      
+      <div class="links"><a class="pdf" href="https://www.math.univ-paris13.fr/~vallette/Operads.pdf" target="_blank" rel="noopener">📄 LodayVallette2012 2012</a> <a class="pdf" href="https://arxiv.org/pdf/math/0305049" target="_blank" rel="noopener">📄 Leinster2003 2003</a></div>
+      
+    </div>
+  </details>
+    </div>
+  </details>
+    </div>
+  </details>
+<details class="qnode" open>
+    <summary><span class="qid">L1-Q2</span> How can Noether’s theorem be operadically extended to identify symmetries in the graph architecture of question–answer mappings for complex systems?</summary>
+    <div class="qbody">
+      <p class="note">The Noether branch of the research tree.</p>
+      <p class="note"><strong>Conserved:</strong> Noether currents on the QA-graph are the conserved quantities under collapse.</p>
+      <div class="links"><a class="pdf" href="https://arxiv.org/pdf/1810.06534" target="_blank" rel="noopener">📄 GwilliamWilliams2018 2018</a> <a class="pdf" href="https://arxiv.org/pdf/2310.06137" target="_blank" rel="noopener">📄 CostelloGwilliam2023 2023</a> <a class="pdf" href="https://arxiv.org/pdf/2504.05626" target="_blank" rel="noopener">📄 Gwilliam2025Noether 2025</a> <a class="pdf" href="https://arxiv.org/pdf/2006.14741" target="_blank" rel="noopener">📄 Baez2020 2020</a> <a class="pdf" href="https://arxiv.org/pdf/hep-th/9307114" target="_blank" rel="noopener">📄 KimuraStasheffVoronov1993 1993</a> <a class="pdf" href="https://arxiv.org/pdf/alg-geom/9704009" target="_blank" rel="noopener">📄 Kapranov1997 1997</a></div>
+      <details class="qnode" >
+    <summary><span class="qid">L2-2a</span> What Lie or associative operad encodes the symmetry group actions on question-tree edges?</summary>
+    <div class="qbody">
+      
+      
+      <div class="links"><a class="pdf" href="https://math.ucr.edu/home/baez/trimble/trimble_lie_operad.pdf" target="_blank" rel="noopener">📄 TrimbleLie n.d.</a> <a class="pdf" href="https://arxiv.org/pdf/2508.01886" target="_blank" rel="noopener">📄 Ferraioli2025 2025</a> <a class="pdf" href="https://arxiv.org/pdf/1009.1654" target="_blank" rel="noopener">📄 Willwacher2010 2010</a> <a class="pdf" href="https://arxiv.org/pdf/math/0208093" target="_blank" rel="noopener">📄 Conant2002 2002</a></div>
+      <details class="qnode" >
+    <summary><span class="qid">L3-2a-i</span> How to define the Lie bracket on edge transformations preserving question connectivity?</summary>
+    <div class="qbody">
+      
+      
+      <div class="links"><a class="pdf" href="https://arxiv.org/pdf/1009.1654" target="_blank" rel="noopener">📄 Willwacher2010 2010</a> <a class="pdf" href="https://arxiv.org/pdf/hep-th/9307114" target="_blank" rel="noopener">📄 KimuraStasheffVoronov1993 1993</a></div>
+      
+    </div>
+  </details><details class="qnode" >
+    <summary><span class="qid">L3-2a-ii</span> What relations in the operad ensure Jacobi identity for symmetry flows?</summary>
+    <div class="qbody">
+      
+      
+      <div class="links"><a class="pdf" href="https://math.ucr.edu/home/baez/trimble/trimble_lie_operad.pdf" target="_blank" rel="noopener">📄 TrimbleLie n.d.</a> <a class="pdf" href="https://arxiv.org/pdf/2508.01886" target="_blank" rel="noopener">📄 Ferraioli2025 2025</a></div>
+      
+    </div>
+  </details>
+    </div>
+  </details><details class="qnode" >
+    <summary><span class="qid">L2-2b</span> How does functoriality collapse symmetric answers back to conserved domain quantities?</summary>
+    <div class="qbody">
+      
+      
+      <div class="links"><a class="pdf" href="https://arxiv.org/pdf/2606.13649" target="_blank" rel="noopener">📄 BottmanLiuRichardson2026 2026</a> <a class="pdf" href="https://arxiv.org/pdf/2310.06137" target="_blank" rel="noopener">📄 CostelloGwilliam2023 2023</a> <a class="pdf" href="https://arxiv.org/pdf/2006.14741" target="_blank" rel="noopener">📄 Baez2020 2020</a></div>
+      <details class="qnode" >
+    <summary><span class="qid">L3-2b-i</span> What is the explicit Noether current map from operad compositions to invariant functors on the QA-graph?</summary>
+    <div class="qbody">
+      
+      
+      <div class="links"><a class="pdf" href="https://arxiv.org/pdf/1810.06534" target="_blank" rel="noopener">📄 GwilliamWilliams2018 2018</a> <a class="pdf" href="https://arxiv.org/pdf/2504.05626" target="_blank" rel="noopener">📄 Gwilliam2025Noether 2025</a></div>
+      
+    </div>
+  </details><details class="qnode" >
+    <summary><span class="qid">L3-2b-ii</span> How to quantify non-degeneracy of conserved quantities under operadic substitution?</summary>
+    <div class="qbody">
+      
+      
+      <div class="links"><a class="pdf" href="https://arxiv.org/pdf/2006.14741" target="_blank" rel="noopener">📄 Baez2020 2020</a> <a class="pdf" href="https://arxiv.org/pdf/2606.13649" target="_blank" rel="noopener">📄 BottmanLiuRichardson2026 2026</a></div>
+      
+    </div>
+  </details>
+    </div>
+  </details>
+    </div>
+  </details>
+<details class="qnode" open>
+    <summary><span class="qid">L1-Q3</span> How does double operadic theory of systems structure the interfaces between knowledge domains and agentic research pipelines?</summary>
+    <div class="qbody">
+      
+      
+      <div class="links"><a class="pdf" href="https://arxiv.org/pdf/2505.18329" target="_blank" rel="noopener">📄 LibkindMyers2025 2025</a> <a class="pdf" href="https://arxiv.org/pdf/1305.0297" target="_blank" rel="noopener">📄 Spivak2013 2013</a> <a class="pdf" href="https://arxiv.org/pdf/2101.11115" target="_blank" rel="noopener">📄 Foley2021 2021</a></div>
+      <details class="qnode" >
+    <summary><span class="qid">L2-3a</span> What is the double category of interfaces and interactions in DOTS?</summary>
+    <div class="qbody">
+      
+      
+      <div class="links"><a class="pdf" href="https://arxiv.org/pdf/2505.18329" target="_blank" rel="noopener">📄 LibkindMyers2025 2025</a></div>
+      
+    </div>
+  </details><details class="qnode" >
+    <summary><span class="qid">L2-3b</span> How do wiring diagrams and open dynamical systems relate to question composition?</summary>
+    <div class="qbody">
+      
+      
+      <div class="links"><a class="pdf" href="https://arxiv.org/pdf/1305.0297" target="_blank" rel="noopener">📄 Spivak2013 2013</a> <a class="pdf" href="https://arxiv.org/pdf/1803.05316" target="_blank" rel="noopener">📄 FongSpivak2018 2018</a></div>
+      
+    </div>
+  </details>
+    </div>
+  </details>
+<details class="qnode" open>
+    <summary><span class="qid">L1-Q4</span> How do Tree-of-Thoughts and multi-hop QA practices instantiate (or fail to instantiate) operadic compositionality?</summary>
+    <div class="qbody">
+      
+      
+      <div class="links"><a class="pdf" href="https://arxiv.org/pdf/2305.10601" target="_blank" rel="noopener">📄 Yao2023 2023</a> <a class="pdf" href="https://arxiv.org/pdf/2606.13634" target="_blank" rel="noopener">📄 BottmanRichardson2026 2026</a> <a class="pdf" href="https://arxiv.org/pdf/2606.13649" target="_blank" rel="noopener">📄 BottmanLiuRichardson2026 2026</a></div>
+      <details class="qnode" >
+    <summary><span class="qid">L2-4a</span> Where does ToT coincide with free algebras over the questions operad?</summary>
+    <div class="qbody">
+      
+      
+      <div class="links"><a class="pdf" href="https://arxiv.org/pdf/2305.10601" target="_blank" rel="noopener">📄 Yao2023 2023</a> <a class="pdf" href="https://arxiv.org/pdf/2606.13634" target="_blank" rel="noopener">📄 BottmanRichardson2026 2026</a></div>
+      
+    </div>
+  </details><details class="qnode" >
+    <summary><span class="qid">L2-4b</span> What failure modes appear as operadic inconsistency in multi-hop evaluation?</summary>
+    <div class="qbody">
+      <p class="note">Premature category collapse is a primary failure mode in agentic decomposition.</p>
+      
+      <div class="links"><a class="pdf" href="https://arxiv.org/pdf/2606.13649" target="_blank" rel="noopener">📄 BottmanLiuRichardson2026 2026</a></div>
+      
+    </div>
+  </details>
+    </div>
+  </details></div>
+  </section>
+
+  <section class="block" id="wiki">
+    <h2 class="display">Internal wiki</h2>
+    <p class="muted">19 substrate entries</p>
+    <div class="wiki-grid" style="margin-top:1rem"><article class="wiki-card" id="wiki-operad">
+    <h3>Operad</h3>
+    <div class="tag">operads</div>
+    <p>An operad is a device that encodes multi-input operations and the coherent ways they substitute into one another (many-in, one-out composition).</p>
+    <p class="note">Classically introduced in topology (Boardman–Vogt, May) to describe iterated loop spaces via little cubes, algebraic operads organize types of algebras: associative, commutative, Lie, Gerstenhaber, and their homotopy-coherent versions.<br/>Combinatorially, an operad O consists of spaces O(n) of n-ary operations, with composition maps that substitute outputs of operations into inputs of others, plus equivariant symmetric-group actions (or planar variants).<br/>An algebra over an operad O is a space A with maps O(n) × Aⁿ → A satisfying associativity of substitution — the ‘dictionary’ that turns abstract operations into concrete computations.<br/>Standard references: May’s Geometry of Iterated Loop Spaces; Loday–Vallette Algebraic Operads; Markl’s survey Operads and PROPs; Leinster’s Higher Operads, Higher Categories.</p>
+    <p class="related muted">Related: algebra-over-operad, questions-operad, lie-operad, composition-tree</p>
+  </article>
+<article class="wiki-card" id="wiki-algebra-over-operad">
+    <h3>Algebra over an operad</h3>
+    <div class="tag">operads</div>
+    <p>A concrete carrier space equipped with operations specified by an operad, compatible with composition.</p>
+    <p class="note">If Q is the questions operad, a QA model is an algebra over Q: each question template (operation) is realized by the model’s map from sub-answers to a parent answer.<br/>This re-framing is the central contribution of Bottman–Richardson (2026): multi-step reasoning becomes operadic algebra rather than ad-hoc prompting folklore.</p>
+    <p class="related muted">Related: operad, questions-operad, operadic-consistency</p>
+  </article>
+<article class="wiki-card" id="wiki-questions-operad">
+    <h3>Questions operad Q</h3>
+    <div class="tag">operads</div>
+    <p>The operad whose operations are question templates and whose composition is substitution of sub-answers (Bottman–Richardson, 2026).</p>
+    <p class="note">Operations in Q correspond to ways of asking a parent question in terms of sub-questions. Composition is the tree-shaped substitution of answers into templates.<br/>QA models become Q-algebras. Operadic consistency asks whether the model’s direct answer agrees with the answer obtained by composing partial collapses of a decomposition tree.<br/>This is the closest formalization of meta-operadic question-tree research skills as of mid-2026.</p>
+    <p class="related muted">Related: operad, operadic-consistency, tree-of-thoughts, meta-operad</p>
+  </article>
+<article class="wiki-card" id="wiki-operadic-consistency">
+    <h3>Operadic consistency</h3>
+    <div class="tag">llm</div>
+    <p>A label-free metric: direct answers should agree with composed answers from stated decompositions (Bottman–Liu–Richardson, 2026).</p>
+    <p class="note">Empirically, operadic consistency correlates with multi-hop QA accuracy across twelve LLMs and four datasets, outperforming temperature-based self-consistency baselines in the companion evaluation paper.<br/>In the language of this course, consistency is a compositionality test for verbal, non-deterministic domains — the collapse check of the meta-operadic research loop.</p>
+    <p class="related muted">Related: questions-operad, compositionality, failure-modes</p>
+  </article>
+<article class="wiki-card" id="wiki-double-operad">
+    <h3>Double operadic theory of systems (DOTS)</h3>
+    <div class="tag">systems</div>
+    <p>Libkind–Myers (2025): open systems as modules over a double category of interfaces and interactions.</p>
+    <p class="note">Double operads package parallel and sequential composition of open systems. Interfaces form one categorical direction; interactions another.<br/>This is the natural home for ‘double algebraic theory for compositional systems’ — systems of systems with typed boundaries.<br/>Related: Spivak wiring diagrams; Foley et al. operads for complex system design.</p>
+    <p class="related muted">Related: operad, wiring-diagrams, open-systems</p>
+  </article>
+<article class="wiki-card" id="wiki-noether-theorem">
+    <h3>Noether’s theorem</h3>
+    <div class="tag">noether</div>
+    <p>Continuous symmetries of the action yield conserved quantities (charges/currents). Modern treatments clarify the map from observables to generators.</p>
+    <p class="note">Emmy Noether’s first theorem (1918) links variational symmetries to conservation laws in classical field theory.<br/>Baez (2020) isolates assumptions: mapping observables to generators so each observable generates a one-parameter group that preserves itself.<br/>In factorization algebras (Costello–Gwilliam), Noether theorems extend beyond perturbative QFT; higher symmetries appear as higher Kac–Moody-type structures (Gwilliam–Williams).</p>
+    <p class="related muted">Related: conserved-quantity, factorization-algebra, noether-on-qa</p>
+  </article>
+<article class="wiki-card" id="wiki-conserved-quantity">
+    <h3>Conserved quantity</h3>
+    <div class="tag">noether</div>
+    <p>An invariant associated to a symmetry; in research trees, an insight core that survives substitution and collapse.</p>
+    <p class="note">In physics: Noether charge integrating a current. In this course’s metaphor: a claim or structural fact that remains fixed under reordering of independent sub-questions, partial collapses, and literature re-alignment.<br/>Non-degeneracy conditions (Baez) prevent ‘trivial’ conserved quantities that carry no information.</p>
+    <p class="related muted">Related: noether-theorem, operadic-consistency</p>
+  </article>
+<article class="wiki-card" id="wiki-factorization-algebra">
+    <h3>Factorization algebra</h3>
+    <div class="tag">noether</div>
+    <p>Local-to-global structure on manifolds capturing observables of field theories; home for modern Noether theorems.</p>
+    <p class="note">Factorization algebras assign cochain complexes of observables to opens, with multiplication maps for disjoint unions, and descent properties.<br/>They provide a rigorous setting in which symmetries act and conserved currents are constructed (Costello–Gwilliam program).</p>
+    <p class="related muted">Related: noether-theorem, higher-symmetries</p>
+  </article>
+<article class="wiki-card" id="wiki-lie-operad">
+    <h3>Lie operad</h3>
+    <div class="tag">operads</div>
+    <p>The operad whose algebras are Lie algebras; generated by a skew-symmetric binary bracket subject to Jacobi.</p>
+    <p class="note">The Lie operad encodes [x,y] = −[y,x] and the Jacobi identity [[x,y],z] + cycl = 0.<br/>Trimble’s notes give a careful combinatorial presentation. Graph complexes provide models for related Lie structures on graphs (Kontsevich, Willwacher).</p>
+    <p class="related muted">Related: graph-complex, jacobi-identity, operad</p>
+  </article>
+<article class="wiki-card" id="wiki-graph-complex">
+    <h3>Kontsevich graph complex</h3>
+    <div class="tag">graphs</div>
+    <p>A complex of graphs with a differential encoding edge contractions/expansions; models deformations and Lie structures relevant to symmetries on graphs.</p>
+    <p class="note">Willwacher (2010) showed that the degree-0 cohomology of Kontsevich’s graph complex is the Grothendieck–Teichmüller Lie algebra grt₁.<br/>For QA-graphs, graph complexes supply a language for infinitesimal edge transformations that preserve connectivity — candidates for Lie brackets on question-tree edges.</p>
+    <p class="related muted">Related: lie-operad, noether-on-qa, jacobi-identity</p>
+  </article>
+<article class="wiki-card" id="wiki-jacobi-identity">
+    <h3>Jacobi identity</h3>
+    <div class="tag">foundations</div>
+    <p>[[x,y],z] + [[y,z],x] + [[z,x],y] = 0 — coherence of triple brackets in Lie algebras.</p>
+    <p class="note">In the Lego-castle metaphor used in this research program: Jacobi ensures that multi-twists of castle symmetries cycle without warping the structure.<br/>Any proposed Lie bracket on QA-graph edges must satisfy Jacobi to be a valid Lie operad algebra.</p>
+    <p class="related muted">Related: lie-operad, graph-complex</p>
+  </article>
+<article class="wiki-card" id="wiki-tree-of-thoughts">
+    <h3>Tree of Thoughts</h3>
+    <div class="tag">llm</div>
+    <p>Yao et al. (2023): deliberate multi-path reasoning over a tree of intermediate thoughts.</p>
+    <p class="note">ToT generalizes Chain-of-Thought by maintaining multiple reasoning branches and search procedures.<br/>Relative to the questions operad: ToT implements a search policy over trees that could be seen as free (or free-ish) Q-terms, but without the explicit algebra and consistency metric of Bottman et al.</p>
+    <p class="related muted">Related: questions-operad, operadic-consistency</p>
+  </article>
+<article class="wiki-card" id="wiki-meta-operad">
+    <h3>Meta-operadic question decomposition</h3>
+    <div class="tag">method</div>
+    <p>A research method: generate arity-n question trees, align literature, answer leaves, collapse, extract Noether-style conserved insights.</p>
+    <p class="note">Protocol steps: (1) partition domain into Level-1 atomic questions; (2) recurse with operadic templates; (3) attach full-PDF literature per node; (4) answer and compose; (5) measure operadic consistency; (6) identify conserved quantities.<br/>Primary failure mode: collapsing a question node into a category/concept too early — losing the operational atomicity that makes composition testable.<br/>Implemented as the operadic-question-decomposition skill in this research program.</p>
+    <p class="related muted">Related: questions-operad, operadic-consistency, noether-on-qa, failure-modes</p>
+  </article>
+<article class="wiki-card" id="wiki-noether-on-qa">
+    <h3>Noether structure on QA-graphs</h3>
+    <div class="tag">meta</div>
+    <p>Proposed extension: symmetries of question–answer graphs yield conserved insight cores under operadic substitution.</p>
+    <p class="note">Still an open research direction. Existing ingredients: (i) questions operad + consistency; (ii) Lie/graph-complex language for edge symmetries; (iii) factorization-algebra Noether currents as template.<br/>This course treats the extension carefully: we map what exists, state what is conjectural, and reserve novelty claims for the thesis future-work section.</p>
+    <p class="related muted">Related: noether-theorem, graph-complex, questions-operad, conserved-quantity</p>
+  </article>
+<article class="wiki-card" id="wiki-failure-modes">
+    <h3>Failure modes of question-tree research</h3>
+    <div class="tag">method</div>
+    <p>Premature category collapse, fidelity loss under substitution, broken coherence of multi-level composition.</p>
+    <p class="note">Premature collapse: treating a node as a solved ‘topic’ rather than an open question — blocks compositionality testing.<br/>Fidelity loss: composed answers diverge from direct answers (operadic inconsistency).<br/>Broken Jacobi/associativity: symmetry flows or substitutions that do not reassociate coherently produce non-reproducible ‘insights’.<br/>Unprovenanced synthesis: claims without source URLs — forbidden by the Noether course conservation of truth.</p>
+    <p class="related muted">Related: meta-operad, operadic-consistency</p>
+  </article>
+<article class="wiki-card" id="wiki-composition-tree">
+    <h3>Composition tree</h3>
+    <div class="tag">foundations</div>
+    <p>Tree-shaped diagram of nested operations; the combinatorial skeleton of operadic composition.</p>
+    <p class="note">Vertices carry operations (or questions); edges indicate substitution of outputs into inputs. Planar trees for non-symmetric operads; labeled leaves for inputs.<br/>In the questions setting, the composition tree is exactly the question decomposition tree.</p>
+    <p class="related muted">Related: operad, questions-operad</p>
+  </article>
+<article class="wiki-card" id="wiki-wiring-diagrams">
+    <h3>Wiring diagrams</h3>
+    <div class="tag">systems</div>
+    <p>Spivak’s operad of wiring diagrams — graphical language for open systems, databases, and plug-and-play composition.</p>
+    <p class="note">Wiring diagrams provide a planar, typed composition syntax closely related to systems operads and to double-operadic interfaces in DOTS.</p>
+    <p class="related muted">Related: double-operad, operad</p>
+  </article>
+<article class="wiki-card" id="wiki-higher-symmetries">
+    <h3>Higher symmetries</h3>
+    <div class="tag">noether</div>
+    <p>Symmetries valued in higher categorical or factorization structures (e.g. higher Kac–Moody algebras).</p>
+    <p class="note">Gwilliam–Williams introduce higher-dimensional generalizations of affine Kac–Moody algebras acting on holomorphic field theories via factorization algebras.</p>
+    <p class="related muted">Related: factorization-algebra, noether-theorem</p>
+  </article>
+<article class="wiki-card" id="wiki-knowledge-symmetry">
+    <h3>Symmetries of the knowledge space</h3>
+    <div class="tag">meta</div>
+    <p>Meta-level dualities: operad ↔ algebra, symmetry ↔ conservation, decomposition ↔ collapse, systems ↔ interfaces.</p>
+    <p class="note">The course wiki itself is organized so that dual pairs and conserved motifs recur: every operad lesson has an algebra dual; every Noether lesson has a conserved-quantity dual; every decomposition has a consistency check.<br/>Recognizing these symmetries is itself a learning objective (Module 8).</p>
+    <p class="related muted">Related: meta-operad, noether-on-qa, operad</p>
+  </article></div>
+  </section>
+
+  <section class="block" id="thesis">
+    <h2 class="display">Operadic Question Decomposition, Compositionality Tests, and Noetherian Invariants on Question–Answer Graphs</h2>
+    <p class="muted">A Critical Synthesis of Existing Mathematics and LLM Evaluation Practice</p>
+    <div class="panel"><section class="thesis-sec" id="th-intro">
+    <h3>§1 Introduction and scope</h3>
+    <p>Compositional reasoning with large language models is widely practiced and weakly formalized. Practitioners decompose hard questions into sub-questions, explore trees of thoughts, and attempt to reassemble answers. Until very recently, this practice lacked a native algebraic vocabulary.</p><p>In June 2026, Bottman and Richardson proposed that operads — mathematical structures for many-input operations composed by substitution — are the natural home for question decomposition. Their questions operad Q has operations given by question templates; composition is substitution of sub-answers; QA models are algebras over Q. A companion paper introduces operadic consistency, a label-free agreement measure between direct and composed answers, empirically correlated with multi-hop accuracy.</p><p>Independently, compositional systems theory has advanced double operadic packages for open systems (Libkind–Myers, 2025), while mathematical physics continues to refine Noether theorems in factorization-algebraic language (Costello–Gwilliam; Gwilliam–Williams). Graph complexes supply Lie-theoretic control of combinatorial graphs (Willwacher).</p><p>This thesis synthesizes these strands as they stand in the published and preprint literature, distinguishes theorems from program sketches, and formulates open problems at their interfaces. Throughout, we adopt a conservation discipline: every factual claim is tied to a citable source; speculative extensions are labeled as such.</p>
+  </section>
+<section class="thesis-sec" id="th-operads-background">
+    <h3>§2 Background: operads and algebras</h3>
+    <p>An operad organizes a family of n-ary operations with coherent substitution and (optionally) symmetric group actions. Foundational sources include May’s geometry of iterated loop spaces, Boardman–Vogt’s homotopy-invariant algebraic structures, and the modern algebraic synthesis of Loday–Vallette. Markl’s survey and Leinster’s higher operads treatise extend the landscape to PROPs and higher categories.</p><p>An algebra over an operad is a carrier equipped with structure maps realizing those operations. This distinction — operad as type of structure, algebra as instance — is essential when we later separate question templates (operad) from a particular LLM (algebra).</p><p>Pedagogically accessible accounts (e.g. Ferraioli 2025) make the same definitions available without full topological prerequisites, which matters for interdisciplinary readers from AI evaluation.</p>
+  </section>
+<section class="thesis-sec" id="th-questions-operad">
+    <h3>§3 The questions operad and operadic consistency</h3>
+    <p>Bottman–Richardson (arXiv:2606.13634) define the questions operad Q. Operations correspond to question templates; composition is the substitution of sub-answers into parent templates; the resulting trees are the formal counterparts of decomposition trees used in multi-hop QA.</p><p>QA models are interpreted as Q-algebras: each template is realized by the model’s map from tuples of sub-answers to a parent answer. This yields a precise sense in which two models share structure (the same operad) while differing as algebras.</p><p>Bottman–Liu–Richardson (arXiv:2606.13649) define operadic consistency: agreement between the model’s direct answer to a compositional query and the answer obtained by composing a stated decomposition. Across twelve LLMs and four multi-hop datasets, consistency correlates with accuracy and can outperform temperature-based self-consistency baselines.</p><p>We emphasize what these papers do claim (an operadic framework and an empirical metric) and what they do not (a full deformation theory of Q-algebras, or a Noether theorem).</p>
+  </section>
+<section class="thesis-sec" id="th-tot">
+    <h3>§4 Relation to Tree of Thoughts and agentic decomposition</h3>
+    <p>Yao et al. (2023) introduce Tree of Thoughts (ToT), a framework for deliberate problem solving that maintains multiple reasoning branches and search procedures over intermediate thoughts. ToT is best read as a family of search policies over tree-structured intermediate states.</p><p>Relative to Q: ToT does not define an operad, but its trees are candidates for free (or free-ish) terms in a questions-like algebra. Operadic consistency supplies an invariant that any such search ought to approximate: composed answers along a decomposition should match direct answers when the algebra is consistent.</p><p>Agentic research skills that recursively expand questions are operationally close to free generation in Q followed by evaluation in a model algebra. The main methodological hazard is premature category collapse — replacing an open question by a topic label — which destroys the ability to test compositionality.</p>
+  </section>
+<section class="thesis-sec" id="th-double">
+    <h3>§5 Double operadic systems theory</h3>
+    <p>Libkind–Myers (arXiv:2505.18329) develop a double operadic theory of systems (DOTS). Open systems, their interactions, and maps are packaged as a module over a double category of interfaces and interactions. Parallel and sequential composition coexist.</p><p>This is the existing formal apparatus closest to a ‘double algebraic theory for compositional systems’ in the sense of systems-of-systems with typed boundaries. Related applied operadic systems work includes Spivak’s wiring diagrams and Foley et al.’s operads for complex system design.</p><p>We record, without overclaiming, that knowledge bases and tool-using agents have natural interface types (schemas, APIs, retrieval ports). A full DOTS model of research pipelines remains future work; the contribution of this section is placement, not construction.</p>
+  </section>
+<section class="thesis-sec" id="th-noether">
+    <h3>§6 Noether theorems: classical to factorization-algebraic</h3>
+    <p>Noether’s first theorem associates continuous variational symmetries with conservation laws. Baez (arXiv:2006.14741) isolates structural assumptions, notably a map from observables to generators of one-parameter groups that preserve those observables.</p><p>In the Costello–Gwilliam factorization algebra program, observables of field theories are organized local-to-global; Noether-type results and higher symmetries (including higher Kac–Moody structures of Gwilliam–Williams, arXiv:1810.06534) are formulated in that language. Recent notes (e.g. arXiv:2504.05626) continue the development of factorization-algebraic Noether theorems.</p><p>These sources supply the only rigorous templates we use when speaking of ‘currents’ and ‘charges’ outside classical field theory.</p>
+  </section>
+<section class="thesis-sec" id="th-lie-graphs">
+    <h3>§7 Lie operads and graph complexes</h3>
+    <p>The Lie operad encodes skew-symmetric brackets with Jacobi identity; Trimble’s notes remain a clear combinatorial reference. Graph complexes, going back to Kontsevich and culminating in Willwacher’s identification of H⁰ with the Grothendieck–Teichmüller Lie algebra grt₁ (arXiv:1009.1654), provide Lie structures native to graphs.</p><p>Kimura–Stasheff–Voronov (hep-th/9307114) connect moduli operads to homotopy Lie algebras; Kapranov (alg-geom/9704009) develops related Lie-algebraic geometry. Together these form the best existing language for infinitesimal edge transformations on combinatorial graphs.</p><p>If question–answer architectures are graphs, this is the natural place to look for candidate brackets — subject to Jacobi and to a Baez-style generator map before any conservation claim.</p>
+  </section>
+<section class="thesis-sec" id="th-qa-noether">
+    <h3>§8 Towards Noether structure on QA-graphs (program, not theorem)</h3>
+    <p>We outline a research program, explicitly not a theorem: (i) formalize QA-graphs with nodes for questions/answers and edges for substitution; (ii) identify symmetry groupoids (sibling permutation, type-preserving rewrites); (iii) seek Lie-algebraic infinitesimal models via graph-complex techniques; (iv) define candidate charges as predicates invariant under those symmetries; (v) relate charges to operadic consistency as an empirical shadow of invariance under collapse.</p><p>Gaps: LLM answer maps are stochastic and non-linear; discrete graphs lack the smooth variational structure of classical Noether; non-degeneracy of charges needs definition; no published construction yet identifies a Noether current for Q-algebras in the literature surveyed here.</p><p>What we can already use operationally: operadic consistency as a collapse invariant; sibling-permutation tests for claim stability; citation-backed wiki discipline as a sociological conservation law for research artifacts.</p>
+  </section>
+<section class="thesis-sec" id="th-method">
+    <h3>§9 Meta-operadic research method</h3>
+    <p>The method used to explore this space — and recommended for adjacent domains — is recursive question decomposition with literature alignment: Level-1 atomic questions partition the domain; sub-questions expand operadically; each node carries full-PDF sources that help answer it; leaves are answered; answers collapse with consistency checks; conserved claims are extracted; premature category collapse is treated as a first-class failure mode.</p><p>This method is compatible with multi-agent orchestration: separate roles for decomposition, retrieval, answering, and adversarial consistency review, with a single-writer wiki substrate for facts — the same conservation pattern used in Noether courseware production.</p>
+  </section>
+<section class="thesis-sec" id="th-related">
+    <h3>§10 Related work summary</h3>
+    <p>Operad foundations: May; Boardman–Vogt; Loday–Vallette; Markl; Leinster; Getzler–Jones.</p><p>Applied compositional systems: Spivak; Fong–Spivak; Foley et al.; Libkind–Myers.</p><p>LLM structured reasoning: Yao et al. ToT; Bottman et al. questions operad and consistency.</p><p>Symmetry and conservation: Baez; Costello–Gwilliam; Gwilliam–Williams; classical Noether literature.</p><p>Graphs and Lie: Willwacher; Kontsevich lineage; Kimura–Stasheff–Voronov; Kapranov; Conant–Vogtmann.</p>
+  </section>
+<section class="thesis-sec" id="th-future">
+    <h3>§11 Future work (potential, not claimed results)</h3>
+    <p>Open problem A. Give a fully precise, checkable definition of a symmetry groupoid of a finite QA-graph induced by a Q-algebra, including stochastic algebras with temperature.</p><p>Open problem B. Construct, or prove obstruction to, a Lie bracket on edge derivations of QA-graphs that recovers sibling permutation at the group level and satisfies Jacobi.</p><p>Open problem C. Relate operadic consistency scores to approximate conservation of a defined charge under partial collapses; provide concentration bounds.</p><p>Open problem D. Build a double-operadic model of tool-using research agents with interfaces for retrieval, citation, and consistency checking, in the DOTS style.</p><p>Open problem E. Produce certified educational instruments (as this course attempts) whose fact substrate is machine-checked against source hashes and link liveness.</p><p>None of A–E is claimed as solved in this thesis. Their value is as a well-posed frontier extracted from the synthesis.</p>
+  </section>
+<section class="thesis-sec" id="th-conclusion">
+    <h3>§12 Conclusion</h3>
+    <p>The research space of operadic question decomposition is no longer informal. The questions operad and operadic consistency provide a native algebra and metric for multi-step verbal reasoning. Double operadic systems theory and classical operad foundations supply the broader compositional context. Noether theorems and graph-complex Lie theory offer the best existing language for symmetries and invariants — but a full Noether theorem for QA-graphs remains an open program.</p><p>The disciplined stance of this thesis is deliberate: map what exists, cite it, teach it, and only then list what might exist next. That is both a scholarly ethic and a conservation law.</p>
+  </section></div>
+  </section>
+
+  <section class="block" id="sources">
+    <h2 class="display">Sources & PDF library</h2>
+    <p class="muted">22 entries · open PDFs in a new tab</p>
+    <div class="panel" style="overflow:auto">
+      <table>
+        <thead><tr><th>Year</th><th>Work</th><th>Link</th><th>Tags</th></tr></thead>
+        <tbody><tr>
+    <td>2026</td>
+    <td><strong>Bottman, N. & Richardson, K.</strong><br><span class="muted">Operads for compositional reasoning in LLMs</span><br><span class="muted mono">arXiv:2606.13634</span></td>
+    <td><a href="https://arxiv.org/pdf/2606.13634" target="_blank" rel="noopener">PDF</a></td>
+    <td>questions-operad, LLM, compositionality</td>
+  </tr>
+<tr>
+    <td>2026</td>
+    <td><strong>Bottman, N., Liu, Y. & Richardson, K.</strong><br><span class="muted">Operadic consistency: a label-free signal for compositional reasoning failures in LLMs</span><br><span class="muted mono">arXiv:2606.13649</span></td>
+    <td><a href="https://arxiv.org/pdf/2606.13649" target="_blank" rel="noopener">PDF</a></td>
+    <td>operadic-consistency, LLM, evaluation</td>
+  </tr>
+<tr>
+    <td>2025</td>
+    <td><strong>Libkind, S. & Myers, D. J.</strong><br><span class="muted">Towards a double operadic theory of systems</span><br><span class="muted mono">arXiv:2505.18329</span></td>
+    <td><a href="https://arxiv.org/pdf/2505.18329" target="_blank" rel="noopener">PDF</a></td>
+    <td>double-operad, systems</td>
+  </tr>
+<tr>
+    <td>2018</td>
+    <td><strong>Gwilliam, O. & Williams, B. R.</strong><br><span class="muted">Higher Kac-Moody algebras and symmetries of holomorphic field theories</span><br><span class="muted mono">arXiv:1810.06534</span></td>
+    <td><a href="https://arxiv.org/pdf/1810.06534" target="_blank" rel="noopener">PDF</a></td>
+    <td>noether, factorization, symmetries</td>
+  </tr>
+<tr>
+    <td>2023</td>
+    <td><strong>Costello, K. & Gwilliam, O.</strong><br><span class="muted">Factorization algebra</span><br><span class="muted mono">arXiv:2310.06137</span></td>
+    <td><a href="https://arxiv.org/pdf/2310.06137" target="_blank" rel="noopener">PDF</a></td>
+    <td>factorization, noether, QFT</td>
+  </tr>
+<tr>
+    <td>2020</td>
+    <td><strong>Baez, J. C.</strong><br><span class="muted">Getting to the Bottom of Noether's Theorem</span><br><span class="muted mono">arXiv:2006.14741</span></td>
+    <td><a href="https://arxiv.org/pdf/2006.14741" target="_blank" rel="noopener">PDF</a></td>
+    <td>noether, foundations</td>
+  </tr>
+<tr>
+    <td>2010</td>
+    <td><strong>Willwacher, T.</strong><br><span class="muted">M. Kontsevich's graph complex and the Grothendieck-Teichmueller Lie algebra</span><br><span class="muted mono">arXiv:1009.1654</span></td>
+    <td><a href="https://arxiv.org/pdf/1009.1654" target="_blank" rel="noopener">PDF</a></td>
+    <td>graph-complex, lie-operad</td>
+  </tr>
+<tr>
+    <td>1993</td>
+    <td><strong>Kimura, T., Stasheff, J. & Voronov, A. A.</strong><br><span class="muted">On operad structures of moduli spaces and string theory</span><br><span class="muted mono">arXiv:hep-th/9307114</span></td>
+    <td><a href="https://arxiv.org/pdf/hep-th/9307114" target="_blank" rel="noopener">PDF</a></td>
+    <td>operad, homotopy-lie, string</td>
+  </tr>
+<tr>
+    <td>1997</td>
+    <td><strong>Kapranov, M.</strong><br><span class="muted">Rozansky-Witten invariants via Atiyah classes</span><br><span class="muted mono">arXiv:alg-geom/9704009</span></td>
+    <td><a href="https://arxiv.org/pdf/alg-geom/9704009" target="_blank" rel="noopener">PDF</a></td>
+    <td>lie, graph, geometry</td>
+  </tr>
+<tr>
+    <td>2025</td>
+    <td><strong>Ferraioli, F.</strong><br><span class="muted">A Gentle Introduction to Algebraic Operads</span><br><span class="muted mono">arXiv:2508.01886</span></td>
+    <td><a href="https://arxiv.org/pdf/2508.01886" target="_blank" rel="noopener">PDF</a></td>
+    <td>operad, pedagogy</td>
+  </tr>
+<tr>
+    <td>2003</td>
+    <td><strong>Leinster, T.</strong><br><span class="muted">Higher Operads, Higher Categories</span><br><span class="muted mono">arXiv:math/0305049</span></td>
+    <td><a href="https://arxiv.org/pdf/math/0305049" target="_blank" rel="noopener">PDF</a></td>
+    <td>higher-operad, category</td>
+  </tr>
+<tr>
+    <td>2006</td>
+    <td><strong>Markl, M.</strong><br><span class="muted">Operads and PROPs</span><br><span class="muted mono">arXiv:math/0601129</span></td>
+    <td><a href="https://arxiv.org/pdf/math/0601129" target="_blank" rel="noopener">PDF</a></td>
+    <td>operad, prop</td>
+  </tr>
+<tr>
+    <td>2023</td>
+    <td><strong>Yao, S. et al.</strong><br><span class="muted">Tree of Thoughts: Deliberate Problem Solving with Large Language Models</span><br><span class="muted mono">arXiv:2305.10601</span></td>
+    <td><a href="https://arxiv.org/pdf/2305.10601" target="_blank" rel="noopener">PDF</a></td>
+    <td>LLM, tree, reasoning</td>
+  </tr>
+<tr>
+    <td>2013</td>
+    <td><strong>Spivak, D. I.</strong><br><span class="muted">The operad of wiring diagrams: formalizing a graphical language for databases, recursion, and plug-and-play circuits</span><br><span class="muted mono">arXiv:1305.0297</span></td>
+    <td><a href="https://arxiv.org/pdf/1305.0297" target="_blank" rel="noopener">PDF</a></td>
+    <td>operad, systems, wiring</td>
+  </tr>
+<tr>
+    <td>2021</td>
+    <td><strong>Foley, J. D. et al.</strong><br><span class="muted">Operads for complex system design specification, analysis and synthesis</span><br><span class="muted mono">Proc. R. Soc. A / arXiv:2101.11115</span></td>
+    <td><a href="https://arxiv.org/pdf/2101.11115" target="_blank" rel="noopener">PDF</a></td>
+    <td>operad, systems-design</td>
+  </tr>
+<tr>
+    <td>2018</td>
+    <td><strong>Fong, B. & Spivak, D. I.</strong><br><span class="muted">Seven Sketches in Compositionality: An Invitation to Applied Category Theory</span><br><span class="muted mono">arXiv:1803.05316</span></td>
+    <td><a href="https://arxiv.org/pdf/1803.05316" target="_blank" rel="noopener">PDF</a></td>
+    <td>compositionality, ACT</td>
+  </tr>
+<tr>
+    <td>n.d.</td>
+    <td><strong>Trimble, T.</strong><br><span class="muted">Notes on the Lie operad</span><br><span class="muted mono">UCR Math (Baez group notes)</span></td>
+    <td><a href="https://math.ucr.edu/home/baez/trimble/trimble_lie_operad.pdf" target="_blank" rel="noopener">PDF</a></td>
+    <td>lie-operad</td>
+  </tr>
+<tr>
+    <td>2012</td>
+    <td><strong>Loday, J.-L. & Vallette, B.</strong><br><span class="muted">Algebraic Operads</span><br><span class="muted mono">Springer Grundlehren (author PDF)</span></td>
+    <td><a href="https://www.math.univ-paris13.fr/~vallette/Operads.pdf" target="_blank" rel="noopener">PDF</a></td>
+    <td>operad, koszul, textbook</td>
+  </tr>
+<tr>
+    <td>1972</td>
+    <td><strong>May, J. P.</strong><br><span class="muted">The Geometry of Iterated Loop Spaces</span><br><span class="muted mono">LNM / author PDF</span></td>
+    <td><a href="https://www.math.uchicago.edu/~may/BOOKS/gils.pdf" target="_blank" rel="noopener">PDF</a></td>
+    <td>operad, topology</td>
+  </tr>
+<tr>
+    <td>1994</td>
+    <td><strong>Getzler, E. & Jones, J. D. S.</strong><br><span class="muted">Operads, homotopy algebra and iterated integrals for double loop spaces</span><br><span class="muted mono">arXiv:hep-th/9403055</span></td>
+    <td><a href="https://arxiv.org/pdf/hep-th/9403055" target="_blank" rel="noopener">PDF</a></td>
+    <td>operad, homotopy</td>
+  </tr>
+<tr>
+    <td>2002</td>
+    <td><strong>Conant, J. & Vogtmann, K.</strong><br><span class="muted">On a theorem of Kontsevich</span><br><span class="muted mono">arXiv:math/0208093</span></td>
+    <td><a href="https://arxiv.org/pdf/math/0208093" target="_blank" rel="noopener">PDF</a></td>
+    <td>graph-complex, lie</td>
+  </tr>
+<tr>
+    <td>2025</td>
+    <td><strong>Gwilliam, O. et al.</strong><br><span class="muted">Factorization algebras and Noether theorems</span><br><span class="muted mono">arXiv:2504.05626</span></td>
+    <td><a href="https://arxiv.org/pdf/2504.05626" target="_blank" rel="noopener">PDF</a></td>
+    <td>noether, factorization</td>
+  </tr></tbody>
+      </table>
+    </div>
+    <h3 class="display" style="margin-top:1.5rem">NotebookLM paste block</h3>
+    <pre class="nb">https://arxiv.org/pdf/2606.13634
+https://arxiv.org/pdf/2606.13649
+https://arxiv.org/pdf/2505.18329
+https://arxiv.org/pdf/1810.06534
+https://arxiv.org/pdf/2310.06137
+https://arxiv.org/pdf/2006.14741
+https://arxiv.org/pdf/1009.1654
+https://arxiv.org/pdf/hep-th/9307114
+https://arxiv.org/pdf/alg-geom/9704009
+https://arxiv.org/pdf/2508.01886
+https://arxiv.org/pdf/math/0305049
+https://arxiv.org/pdf/math/0601129
+https://arxiv.org/pdf/2305.10601
+https://arxiv.org/pdf/1305.0297
+https://arxiv.org/pdf/2101.11115
+https://arxiv.org/pdf/1803.05316
+https://math.ucr.edu/home/baez/trimble/trimble_lie_operad.pdf
+https://www.math.univ-paris13.fr/~vallette/Operads.pdf
+https://www.math.uchicago.edu/~may/BOOKS/gils.pdf
+https://arxiv.org/pdf/hep-th/9403055
+https://arxiv.org/pdf/math/0208093
+https://arxiv.org/pdf/2504.05626</pre>
+  </section>
+</main>
+<footer>
+  <div class="wrap">
+    Operadic Compositionality — Noether Course · public static deploy<br/>
+    Grounded in cited literature. Novelty claims deferred to thesis future-work sections.
+  </div>
+</footer>
+</body>
+</html>
